@@ -32,6 +32,7 @@ dirlist <- dirlist[grep("rcp85",dirlist, invert = FALSE)]
 # HadGEM2-ES365, inmcm4, IPSL-CM5A-MR, IPSL-CM5B-LR, MIROC5, MIROC-ESM, MIROC-ESM-CHEM, MRI-CGCM3, NorESM1-M
 dirlist <- dirlist[grep("bcc-csm1-1|canesm2|ccsm4|cnrm-cm5|csiro-mk3-6|gfdl-esm|hadgem2-cc|hadgem2-es|inmcm4|ipsl-cm|miroc|mri-cgcm3|noresm1",dirlist, invert = FALSE)]
 
+length(dirlist)*length(1975:2021)
 
 NumNodes <- as.numeric(Sys.getenv('SLURM_JOB_NUM_NODES')) #Get the number of nodes assigned to the job
 taskID <- as.numeric(Sys.getenv('SLURM_PROCID')) #Get the Node number
