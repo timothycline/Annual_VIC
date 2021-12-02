@@ -5,17 +5,22 @@
 # Clear workspace
 rm(list = ls(all = TRUE))
 
-# Set working directory
-outdir <- 'E:/VIC_US'
-setwd(outdir)
-
 # Load libraries
 library(RCurl)
 library(ncdf4)
+library(here)
+library(stringr)
+
+# Set working directory
+outdir <- here('InputData')
+#setwd(outdir)
+
+
 
 # get list of folders in ftp site
 site_url <- "ftp://gdo-dcp.ucllnl.org/pub/dcp/archive/cmip5/hydro/BCSD_daily_VIC_nc/"
-dirlist <- strsplit(getURL(site_url,ftp.use.epsv = FALSE,dirlistonly = TRUE),"\r\n")[[1]]
+#dirlist <- strsplit(getURL(site_url,ftp.use.epsv = FALSE,dirlistonly = TRUE),"\r\n")[[1]]
+dirlist <- str_split(getURL(site_url,ftp.use.epsv = FALSE,dirlistonly = TRUE),"\n")[[1]]
 
 # filter this to just RCP 8.5 directories
 dirlist <- dirlist[grep("rcp85",dirlist, invert = FALSE)]
@@ -33,7 +38,7 @@ for (dd in 1:length(dirlist)){
   #dd <- 1; ff <- 1
   
   # get list of files in folder
-  filelist <- strsplit(getURL(paste0(site_url,dirlist[dd],"/"),ftp.use.epsv = FALSE,dirlistonly = TRUE),"\r\n")[[1]]
+  filelist <- str_split(getURL(paste0(site_url,dirlist[dd],"/"),ftp.use.epsv = FALSE,dirlistonly = TRUE),"\n")[[1]]
   
   # filter to just total runoff
   filelist <- filelist[grep("total_runoff",filelist, invert = FALSE)]
@@ -42,7 +47,8 @@ for (dd in 1:length(dirlist)){
   fileyrs <- as.integer(substr(filelist, nchar(filelist) - 6, nchar(filelist) - 3))
   
   # filter to just the years we want
-  filelist <- filelist[(fileyrs >= 1977 & fileyrs <= 2006) | (fileyrs >= 2030 & fileyrs <= 2059) | (fileyrs >= 2070 & fileyrs <= 2099)]
+  #filelist <- filelist[(fileyrs >= 1975 & fileyrs <= 2021) | (fileyrs >= 2030 & fileyrs <= 2059) | (fileyrs >= 2070 & fileyrs <= 2099)]
+  filelist <- filelist[(fileyrs >= 1975 & fileyrs <= 2021)]
   
   # for each file:
   for(ff in 1:length(filelist)){
@@ -52,6 +58,8 @@ for (dd in 1:length(dirlist)){
     
     # Set destination
     dest <- paste0(outdir, "/",filelist[ff])
+    #dest <- here('InputData',filelist[ff])
+   
     
     # skip files that have already been downloaded
     if (!file.exists(dest)){
