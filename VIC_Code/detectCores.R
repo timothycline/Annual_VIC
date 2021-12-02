@@ -3,5 +3,5 @@ library(doParallel)
 
 taskID <- as.numeric(Sys.getenv('SLURM_PROCID'))
 detectCores()
-#print(taskID)
+print(taskID)
 
