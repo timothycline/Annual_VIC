@@ -38,6 +38,9 @@ taskID <- as.numeric(Sys.getenv('SLURM_PROCID')) #Get the Node number
 dirsplit <- split(dirlist,1:NumNodes) #split total number of directories into groups by
 task_dirlist <- dirsplit[[taskID + 1]] #assign specific directories to nodes
 
+cl <- makeCluster(detectCores())
+registerDoParallel(cl)
+
 # For each folder:
 for(dd in 1:length(task_dirlist)){
 #for (dd in 1:4){
@@ -57,8 +60,7 @@ for(dd in 1:length(task_dirlist)){
   #filelist <- filelist[(fileyrs >= 1975 & fileyrs <= 2021) | (fileyrs >= 2030 & fileyrs <= 2059) | (fileyrs >= 2070 & fileyrs <= 2099)]
   filelist <- filelist[(fileyrs >= 1975 & fileyrs <= 2021)]
   
-  cl <- makeCluster(detectCores())
-  registerDoParallel(cl)
+  
   # for each file:
   foreach(ff =  1:length(filelist)) %dopar% {
     
@@ -79,8 +81,8 @@ for(dd in 1:length(task_dirlist)){
     
     print(paste0("Downloaded file ", ff, " of ", length(filelist), " from folder ",dd," of ",length(task_dirlist)))
   }
-  stopCluster(cl)
 }
+stopCluster(cl)
 
 # Test all downloads
 nclist <- list.files(outdir)
