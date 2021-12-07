@@ -19,19 +19,19 @@ import arcpy
 import time
 
 ### input/output files
-grid = "~/Annual_VIC/Fishnet/Mask_Fishnet_Proj.shp"
-snapras = "~/Annual_VIC/Fishnet/Mask.tif"
+grid = "Fishnet/Mask_Fishnet_Proj.shp"
+snapras = "Fishnet/Mask.tif"
 #grid = "D:/NHD/Weights/Mask_Fishnet_Proj.shp"
 #snapras = "D:/NHD/Weights/Fishnet/Mask.tif"
 #forests = "D:/NHD/Forests/USFS_Admin_Forests_2020_07_30_Dissolve.shp"
 
 # catchments
-catdir = "~/Annual_VIC/NHDdata/NHDPlus17Catchments.gdb"
+catdir = "NHDdata/NHDPlus17Catchments.gdb"
 #catdir = "D:/NHD/Catchments/Catchments_2020_07_30.gdb"
 arcpy.env.workspace = catdir
 cats = arcpy.ListFeatureClasses()
 
-outdir = "~/Annual_VIC/CatchmentWeights/Catchment_Weights_17.gdb"
+outdir = "CatchmentWeights/Catchment_Weights_17.gdb"
 #outdir = "D:/NHD/Weights/Catchment_Weights.gdb"
 
 # Set parameters
