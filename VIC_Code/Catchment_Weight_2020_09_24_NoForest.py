@@ -26,12 +26,12 @@ snapras = "~/Annual_VIC/Fishnet/Mask.tif"
 #forests = "D:/NHD/Forests/USFS_Admin_Forests_2020_07_30_Dissolve.shp"
 
 # catchments
-catdir = "~/Annual_VIC/NHDdata/NHDPlusCatchment14/Catchment.shp"
+catdir = "~/Annual_VIC/NHDdata/NHDPlus17Catchments.gdb"
 #catdir = "D:/NHD/Catchments/Catchments_2020_07_30.gdb"
 arcpy.env.workspace = catdir
 cats = arcpy.ListFeatureClasses()
 
-outdir = "~/Annual_VIC/CatchmentWeights/Catchment_Weights_14.gdb"
+outdir = "~/Annual_VIC/CatchmentWeights/Catchment_Weights_17.gdb"
 #outdir = "D:/NHD/Weights/Catchment_Weights.gdb"
 
 # Set parameters
@@ -58,7 +58,7 @@ for cat in cats:
     catcsv = cat.replace("Catchment_", "") + "_wts.csv"
 
     # Intersect catchments with grid
-    arcpy.Intersect_analysis(in_features=incat + " #;" + grid + " #",
+    arcpy.Intersect_analysis(in_features=[incat,grid],
                              out_feature_class= catgrid,
                              join_attributes="ALL", cluster_tolerance="-1 Unknown", output_type="INPUT")
 
