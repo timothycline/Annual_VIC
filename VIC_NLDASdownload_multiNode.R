@@ -5,8 +5,8 @@ library(foreach)
 
 DLlist <- read.delim(here('NLDASdownload_Hourly_01062022.txt'),header=F,stringsAsFactors = F) %>% pull(1)
 
-NumNodes <- 5#as.numeric(Sys.getenv('SLURM_JOB_NUM_NODES')) #Get the number of nodes assigned to the job
-taskID <- 1#as.numeric(Sys.getenv('SLURM_PROCID')) #Get the Node number
+NumNodes <- as.numeric(Sys.getenv('SLURM_JOB_NUM_NODES')) #Get the number of nodes assigned to the job
+taskID <- as.numeric(Sys.getenv('SLURM_PROCID')) #Get the Node number
 dirsplit <- split(DLlist,1:NumNodes) #split total number of directories into groups by
 task_dirlist <- dirsplit[[taskID + 1]] 
 length(task_dirlist)
