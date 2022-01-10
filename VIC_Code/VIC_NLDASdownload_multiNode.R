@@ -19,7 +19,7 @@ foreach(ff=1:1) %dopar% {
   system("touch .netrc")
   system('echo "machine urs.earthdata.nasa.gov login timothy_cline password %#%earthdata1542gnpMT" >> .netrc')
   system("touch .urs_cookies")
-  system(paste0("wget --load-cookies .urs_cookies --save-cookies .urs_cookies --auth-no-challenge=on --no-check-certificate --keep-session-cookies ",task_dirlist[ff]))
+  system(paste0("wget --load-cookies .urs_cookies --save-cookies .urs_cookies --auth-no-challenge=on --no-check-certificate --keep-session-cookies ",task_dirlist[ff]," -P ~/Annual_VIC/NLDASdata/GRB_H"))
 }
 stopCluster(cl)
 
