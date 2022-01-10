@@ -3,7 +3,7 @@ library(dplyr)
 library(doParallel)
 library(foreach)
 
-DLlist <- read.delim(here('NLDASdownload_Hourly_01062022.txt'),header=F,stringsAsFactors = F) %>% pull(1)
+DLlist <- read.delim(here('NLDASdata','NLDASdownload_Hourly_01062022.txt'),header=F,stringsAsFactors = F) %>% pull(1)
 
 NumNodes <- as.numeric(Sys.getenv('SLURM_JOB_NUM_NODES')) #Get the number of nodes assigned to the job
 taskID <- as.numeric(Sys.getenv('SLURM_PROCID')) #Get the Node number
@@ -15,7 +15,7 @@ cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
 foreach(ff=1:length(task_dirlist)) %dopar% {
-  system("cd ~/Annual_VIC")
+  system("cd ~/Annual_VIC/NLDASdata/GRB_H")
   system("touch .netrc")
   system('echo "machine urs.earthdata.nasa.gov login timothy_cline password %#%earthdata1542gnpMT" >> .netrc')
   system("touch .urs_cookies")
