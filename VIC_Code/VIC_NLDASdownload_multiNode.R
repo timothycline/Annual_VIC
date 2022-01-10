@@ -15,11 +15,15 @@ cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 #foreach(ff=1:1) %dopar% {
 foreach(ff=1:length(task_dirlist)) %dopar% {
-  system("cd ~/Annual_VIC/NLDASdata/GRB_H")
-  system("touch .netrc")
-  system('echo "machine urs.earthdata.nasa.gov login timothy_cline password %#%earthdata1542gnpMT" >> .netrc')
-  system("touch .urs_cookies")
-  system(paste0("wget --load-cookies .urs_cookies --save-cookies .urs_cookies --auth-no-challenge=on --no-check-certificate --keep-session-cookies ",task_dirlist[ff]," -P ~/Annual_VIC/NLDASdata/GRB_H"))
+  #check for duplicate downloads first then execute.
+  fileout <- substr(task_dirlist[ff],nchar(task_dirlist[ff])-37,nchar(task_dirlist[ff]))
+  if(!file.exists(here('NLDASdata','GRB_H',fileout))){
+    system("cd ~/Annual_VIC/NLDASdata/GRB_H")
+    system("touch .netrc")
+    system('echo "machine urs.earthdata.nasa.gov login timothy_cline password %#%earthdata1542gnpMT" >> .netrc')
+    system("touch .urs_cookies")
+    system(paste0("wget --load-cookies .urs_cookies --save-cookies .urs_cookies --auth-no-challenge=on --no-check-certificate --keep-session-cookies ",task_dirlist[ff]," -P ~/Annual_VIC/NLDASdata/GRB_H"))
+  }
 }
 stopCluster(cl)
 
