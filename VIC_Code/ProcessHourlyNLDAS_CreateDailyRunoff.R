@@ -43,8 +43,8 @@ foreach(dd=1:length(task_dirlist)) %dopar% {
   })
   
   #Combine sum across all hourly data
-  BGRUN_sum <- Reduce('+','BGRUNS')
-  SSRUN_sum <- Reduce('+','SSRUNS')
+  BGRUN_sum <- Reduce('+',BGRUNS)
+  SSRUN_sum <- Reduce('+',SSRUNS)
   
   #Rebuild array
   AllRUN <- array(data=NA,dim=c(nrow(BGRUN_sum),ncol(BGRUN_sum),2))
