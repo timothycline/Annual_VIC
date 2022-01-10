@@ -13,8 +13,8 @@ length(task_dirlist)
 
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
-#foreach(ff=1:length(task_dirlist)) %dopar% {
-foreach(ff=1:1) %dopar% {
+#foreach(ff=1:1) %dopar% {
+foreach(ff=1:length(task_dirlist)) %dopar% {
   system("cd ~/Annual_VIC/NLDASdata/GRB_H")
   system("touch .netrc")
   system('echo "machine urs.earthdata.nasa.gov login timothy_cline password %#%earthdata1542gnpMT" >> .netrc')
