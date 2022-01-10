@@ -14,4 +14,4 @@
 
 module load gnu8/8.3.0 R/4.1.1 
 
-prun Rscript VIC_NLDASdownload_multiNode.R
+prun Rscript ~/Annual_VIC/VIC_Code/VIC_NLDASdownload_multiNode.R
