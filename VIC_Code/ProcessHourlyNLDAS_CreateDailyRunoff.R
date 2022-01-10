@@ -27,7 +27,7 @@ cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
 #Loop over days to process on this node in parallel
-foreach(dd=1:length(task_dirlist)) %dopar% {
+foreach(dd=1:length(task_dirlist),.packages=c('dplyr')) %dopar% {
   this.date <- which(all_dates==task_dirlist[dd]) #match all files that belong to this date
   #Load all gribs that correspond to this date
   GRIBS<-lapply(this.date,FUN=function(x){
@@ -54,7 +54,7 @@ foreach(dd=1:length(task_dirlist)) %dopar% {
   saveRDS(AllRUN,file=here('NLDASdata','DailyRunoffs',paste0('Runoff_',uni_dates[dd],'RDS')))
 }
 
-
+stopCluster(cl)
 
 
 
