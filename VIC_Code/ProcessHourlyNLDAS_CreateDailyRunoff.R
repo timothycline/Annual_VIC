@@ -42,16 +42,20 @@ foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% 
     return(x[,,12])
   })
   
+  SSRUNS[[1]]
+  
   #Combine sum across all hourly data
   BGRUN_sum <- Reduce('+',BGRUNS)
   SSRUN_sum <- Reduce('+',SSRUNS)
   
-  #Rebuild array
-  AllRUN <- array(data=NA,dim=c(nrow(BGRUN_sum),ncol(BGRUN_sum),2))
-  AllRUN[,,1] <- BGRUN_sum
-  AllRUN[,,2] <- SSRUN_sum
+  #Rebuild list
+  # AllRUN <- array(data=NA,dim=c(nrow(BGRUN_sum),ncol(BGRUN_sum),2))
+  # AllRUN[,,1] <- BGRUN_sum
+  # AllRUN[,,2] <- SSRUN_sum
   
-  saveRDS(AllRUN,file=here('NLDASdata','DailyRunoffs',paste0('Runoff_',uni_dates[dd],'RDS')))
+  AllRUN <- list(BGRUN = BGRUN_sum, SSRUN = SSRUN_sum)
+  
+  saveRDS(AllRUN,file=here('NLDASdata','DailyRunoffs',paste0('DailyRunoff_',uni_dates[dd],'.RDS')))
 }
 
 stopCluster(cl)
