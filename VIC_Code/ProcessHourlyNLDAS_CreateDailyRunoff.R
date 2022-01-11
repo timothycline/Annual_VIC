@@ -27,8 +27,8 @@ cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
 #Loop over days to process on this node in parallel
-foreach(dd=1:1,.packages=c('dplyr','raster','here')) %dopar% {
-#foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% {
+#foreach(dd=1:1,.packages=c('dplyr','raster','here')) %dopar% {
+foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% {
   this.date <- which(all_dates==task_dirlist[dd]) #match all files that belong to this date
   #Load all gribs that correspond to this date
   GRIBS<-lapply(this.date,FUN=function(x){
