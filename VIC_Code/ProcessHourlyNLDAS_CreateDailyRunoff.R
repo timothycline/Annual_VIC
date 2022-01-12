@@ -29,33 +29,40 @@ registerDoParallel(cl)
 #Loop over days to process on this node in parallel
 #foreach(dd=1:1,.packages=c('dplyr','raster','here')) %dopar% {
 alloutput <- foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% {
+  print(paste('Slurm Job Number ',taskID,' :: starting ',task_dirlist[dd]))
   this.date <- which(all_dates==task_dirlist[dd]) #match all files that belong to this date
   #Load all gribs that correspond to this date
-  GRIBS<-lapply(this.date,FUN=function(x){
-    brick(here('NLDASdata','GRB_H',all_grb[x])) %>% as.array()
-  })
-  #Extract BGRUN
-  BGRUNS <- lapply(GRIBS,FUN=function(x){
-    return(x[,,13])
-  })
-  #Extract SSRUN
-  SSRUNS <- lapply(GRIBS,FUN=function(x){
-    return(x[,,12])
-  })
-  
-  #Combine sum across all hourly data
-  BGRUN_sum <- Reduce('+',BGRUNS)
-  SSRUN_sum <- Reduce('+',SSRUNS)
-  
-  #Rebuild list
-  # AllRUN <- array(data=NA,dim=c(nrow(BGRUN_sum),ncol(BGRUN_sum),2))
-  # AllRUN[,,1] <- BGRUN_sum
-  # AllRUN[,,2] <- SSRUN_sum
-  
-  AllRUN <- list(BGRUN = BGRUN_sum, SSRUN = SSRUN_sum)
-  
-  saveRDS(AllRUN,file=here('NLDASdata','DailyRunoffs',paste0('DailyRunoff_',uni_dates[dd],'.RDS')))
-  return(paste0(taskID,'_DailyRunoff_',uni_dates[dd],'.RDS'))
+  if(!file.exists(here('NLDASdata','DailyRunoffs',paste0('DailyRunoff_',task_dirlist[dd],'.RDS')))){
+    GRIBS<-lapply(this.date,FUN=function(x){
+      GRB1<-brick(here('NLDASdata','GRB_H',all_grb[x])) %>% as.array()
+      #GRB1<-tryCatch(brick(here('NLDASdata','GRB_H',all_grb[x])) %>% as.array(),error=function(e){print(paste0('Error: brick failure on ',all_grb[x]))})
+      return(GRB1)
+    })
+    #Extract BGRUN
+    BGRUNS <- lapply(GRIBS,FUN=function(x){
+      BG1<-x[,,13]
+      return(BG1)
+    })
+    #Extract SSRUN
+    SSRUNS <- lapply(GRIBS,FUN=function(x){
+      SS1<-x[,,12]
+      return(SS1)
+    })
+    
+    #Combine sum across all hourly data
+    BGRUN_sum <- Reduce('+',BGRUNS)
+    SSRUN_sum <- Reduce('+',SSRUNS)
+    
+    #Rebuild list
+    # AllRUN <- array(data=NA,dim=c(nrow(BGRUN_sum),ncol(BGRUN_sum),2))
+    # AllRUN[,,1] <- BGRUN_sum
+    # AllRUN[,,2] <- SSRUN_sum
+    
+    AllRUN <- list(BGRUN = BGRUN_sum, SSRUN = SSRUN_sum)
+    
+    saveRDS(AllRUN,file=here('NLDASdata','DailyRunoffs',paste0('DailyRunoff_',task_dirlist[dd],'.RDS')))
+    return(paste0(taskID,'_DailyRunoff_',task_dirlist[dd],'.RDS'))
+  }
 }
 
 print(paste('Slurm Job Number ',taskID))
