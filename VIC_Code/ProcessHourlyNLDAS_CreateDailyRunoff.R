@@ -1,10 +1,10 @@
 #Process hourly NLDAS data into daily data
 
-library(here)
-library(dplyr)
-library(doParallel)
-library(foreach)
-library(raster)
+library(here,quietly=T)
+library(dplyr,quietly=T)
+library(doParallel,quietly=T)
+library(foreach,quietly=T)
+library(raster,quietly=T)
 
 #NLDAS_VIC0125_H.A19790102.0000.002.grb
 fulldir <- list.files(here('NLDASdata','GRB_H'))
@@ -28,7 +28,7 @@ registerDoParallel(cl)
 
 #Loop over days to process on this node in parallel
 #foreach(dd=1:1,.packages=c('dplyr','raster','here')) %dopar% {
-foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% {
+alloutput <- foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% {
   this.date <- which(all_dates==task_dirlist[dd]) #match all files that belong to this date
   #Load all gribs that correspond to this date
   GRIBS<-lapply(this.date,FUN=function(x){
@@ -43,8 +43,6 @@ foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% 
     return(x[,,12])
   })
   
-  SSRUNS[[1]]
-  
   #Combine sum across all hourly data
   BGRUN_sum <- Reduce('+',BGRUNS)
   SSRUN_sum <- Reduce('+',SSRUNS)
@@ -57,7 +55,10 @@ foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% 
   AllRUN <- list(BGRUN = BGRUN_sum, SSRUN = SSRUN_sum)
   
   saveRDS(AllRUN,file=here('NLDASdata','DailyRunoffs',paste0('DailyRunoff_',uni_dates[dd],'.RDS')))
+  return(paste0(taskID,'_DailyRunoff_',uni_dates[dd],'.RDS'))
 }
+
+print(paste('Slurm Job Number ',taskID))
 
 stopCluster(cl)
 
