@@ -4,7 +4,6 @@
 
 #SBATCH --job-name=NLDAS_Hourly_Processing
 #SBATCH -N 20
-#SBATCH -c 20
 #SBATCH -p normal
 #SBATCH --account=norock
 #SBATCH --time=6-23:00:00
