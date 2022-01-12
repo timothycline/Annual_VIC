@@ -3,10 +3,10 @@
 # testing some scripts
 
 #SBATCH --job-name=NLDAS_Hourly_Processing
-#SBATCH -N 40
+#SBATCH -N 20
 #SBATCH -p normal
 #SBATCH --account=norock
-#SBATCH --time=6-23:00:00
+#SBATCH --time=3-23:00:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=tcline@usgs.gov
 #SBATCH -o NLDAS_Hourly_Processing.out
