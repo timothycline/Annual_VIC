@@ -26,18 +26,30 @@ task_dirlist <- dirsplit[[taskID + 1]]
 cl <- makeCluster(detectCores())
 registerDoParallel(cl)
 
+
+CorruptedFiles <- c('NLDAS_VIC0125_H.A20150705.0900.002.grb')
+CorruptedDates <- lapply(CorruptedFiles,FUN=function(x){return(as.numeric(substr(x,18,25)))}) %>% unlist()
 #Loop over days to process on this node in parallel
 #foreach(dd=1:1,.packages=c('dplyr','raster','here')) %dopar% {
 alloutput <- foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','here')) %dopar% {
   print(paste('Slurm Job Number ',taskID,' :: starting ',task_dirlist[dd]))
   this.date <- which(all_dates==task_dirlist[dd]) #match all files that belong to this date
+  
+  #issue with loading one grib. NLDAS_VIC0125_H.A20150705.0900.002.RDS. I saved an RDS from Diane to the folder
   #Load all gribs that correspond to this date
   if(!file.exists(here('NLDASdata','DailyRunoffs',paste0('DailyRunoff_',task_dirlist[dd],'.RDS')))){
+      
     GRIBS<-lapply(this.date,FUN=function(x){
-      GRB1<-brick(here('NLDASdata','GRB_H',all_grb[x])) %>% as.array()
-      #GRB1<-tryCatch(brick(here('NLDASdata','GRB_H',all_grb[x])) %>% as.array(),error=function(e){print(paste0('Error: brick failure on ',all_grb[x]))})
-      return(GRB1)
+      #CHECK FOR CORRUPTED FILE LIST 
+      if(!(all_grb[x] %in% CorruptedFiles)){
+        GRB1<-brick(here('NLDASdata','GRB_H',all_grb[x])) %>% as.array()
+        #GRB1<-tryCatch(brick(here('NLDASdata','GRB_H',all_grb[x])) %>% as.array(),error=function(e){print(paste0('Error: brick failure on ',all_grb[x]))})
+        return(GRB1)
+      }
     })
+    
+    
+    
     #Extract BGRUN
     BGRUNS <- lapply(GRIBS,FUN=function(x){
       BG1<-x[,,13]
@@ -48,6 +60,22 @@ alloutput <- foreach(dd=1:length(task_dirlist),.packages=c('dplyr','raster','her
       SS1<-x[,,12]
       return(SS1)
     })
+    
+    #If corrupted files for this day
+    #Load RDS files for the corrupted files
+    if(task_dirlist[dd] %in% CorruptedDates){
+      CorruptedLists <- lapply(CorruptedFiles[CorruptedDates == task_dirlist[dd]],FUN=function(x){
+        RDSname <- paste0(substr(x,1,nchar(x)-4),'.RDS')
+        RDS1 <- readRDS(here('NLDASdata',RDSname))
+        return(RDS1)
+      })
+      names(CorruptedLists) <- CorruptedFiles
+      
+      for(i in 1:length(CorruptedLists)){
+        BGRUNS[[length(BGRUNS)]] <- CorruptedLists$BGRUN
+        SSRUNS[[length(SSRUNS)]] <- CorruptedLists$SSRUN
+      }
+    }
     
     #Combine sum across all hourly data
     BGRUN_sum <- Reduce('+',BGRUNS)
