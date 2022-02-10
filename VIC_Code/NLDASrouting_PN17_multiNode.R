@@ -55,7 +55,7 @@ rn_names <- c("PN17")
 #### DIVIDE TASKS AMONG SLURM NODES
 NumNodes <- as.numeric(Sys.getenv('SLURM_JOB_NUM_NODES')) #Get the number of nodes assigned to the job
 taskID <- as.numeric(Sys.getenv('SLURM_PROCID')) + 1 #Get the Node number, SLURM returns 0 for first node, but we want 1 for indexing
-dirsplit <- split(1:length(alldailyfiles),1:NumNodes) #split total number of directories into groups by
+dirsplit <- split(1:length(alldailyfiles),cut(1:length(alldailyfiles),NumNodes,labels=F)) #split total number of directories into groups by
 if(taskID == 1){
   task_dirlist <- dirsplit[[taskID]] #If the first chunk load normally 
 }else{
@@ -282,10 +282,13 @@ All_Acc <- foreach(ss = 1:nstrm,.packages=c('fastmatch')) %dopar% {
   return(flow_cur)
 }#EndForEachStreamSegment
 
+names(All_Acc) <- strm_list
+
 if(taskID!=1){
   All_Acc <- lapply(All_Acc,FUN=function(x){
     return(x[-c(1:5)])
   })
+  names(All_Acc) <- strm_list
   startdate <- datenames[6]
 }
 
