@@ -1,14 +1,14 @@
 rm(list = ls(all = TRUE))
 
-library(here)
-library(pryr)
-library(dplyr)
-library(foreign) # to open .dbf's
-library(fastmatch)  # to speed up the matching (fmatch and %fin% instead of match and %in%)
-library(lubridate)
-library(doParallel)
-library(foreach)
-library(igraph)
+suppressPackageStartupMessages(library(here))
+suppressPackageStartupMessages(library(pryr))
+suppressPackageStartupMessages(library(dplyr))
+suppressPackageStartupMessages(library(foreign)) # to open .dbf's
+suppressPackageStartupMessages(library(fastmatch))  # to speed up the matching (fmatch and %fin% instead of match and %in%)
+suppressPackageStartupMessages(library(lubridate))
+suppressPackageStartupMessages(library(doParallel))
+suppressPackageStartupMessages(library(foreach))
+suppressPackageStartupMessages(library(igraph))
 
 options(digits=22)
 options(stringsAsFactors=FALSE) 
@@ -80,6 +80,8 @@ enddate <- datenames[length(datenames)]
 TotalRunoffArray<-array(unlist(AllRuns),dim=c(224,464,length(AllRuns)))
 
 rm(AllRuns)
+
+print(paste0(taskID,': Runoff data loaded'))
 
 # processedRegions <- foreach(rr = 1:length(rn_names)) %dopar% {
 #for(rr in 1:length(rn_names))
@@ -155,17 +157,15 @@ ncells <- length(unique(wts$GridID))
 UniqueCatch<-unique(wts$CatID)
 nwt <- length(UniqueCatch)
 cat_st <- 1
-cat_en <- nwt #ifelse(nwt < 10000, nwt, 10000)
+cat_en <- nwt
 
-#while(cat_st < nwt){ 
+
 wts_sel <- wts[wts$CatID %fin% UniqueCatch[cat_st:cat_en],]
-#wts_sel <- wts[wts$CatID %fin% UniqueCatch[cc],]   
+
 
 # For each of these records, calculate the daily flow for that catchment using the function defined above
 wts_tr <- t(apply(wts_sel, 1, function(x) applyWeights(wts=x, lats, longs, tr_arr=TotalRunoffArray)))
 
-# Add catchment ID to this data frame
-#wts_tr <- cbind(wts_tr, as.numeric(wts_sel$CatID))
 
 # summarize this by catchment ID (last column): there are multiple records for many catchments
 cat_tr <- rowsum(wts_tr, as.numeric(wts_sel$CatID), na.rm = TRUE)
@@ -173,10 +173,9 @@ cat_tr <- rowsum(wts_tr, as.numeric(wts_sel$CatID), na.rm = TRUE)
 # get the row names (catchment IDs) and put these in the order of the NHD list
 cat_list <- fmatch(as.numeric(row.names(cat_tr)), nhd_list)
 
-# Set up next group of catchments to process
-#cat_st <- cat_en + 1
-#cat_en <- ifelse((cat_en + 10000) > nwt, nwt, (cat_en + 10000))
-#}
+
+print(paste0(taskID,': Catchment weighting applied'))
+
 
 # Get catchment areas
 cat_area <- cats$AreaSqKM[fmatch(row.names(cat_tr),cats$FEATUREID)]
@@ -196,6 +195,8 @@ all_m3_day <- foreach(cc = 1:ncat) %dopar% {
   return(m3_day)
 }
 names(all_m3_day) <- row.names(cat_tr)
+
+print(paste0(taskID,': Catchment daily flows applied'))
 
 # get list of streams from VAA file
 strm_list <- vaa$ComID
@@ -284,6 +285,9 @@ All_Acc <- foreach(ss = 1:nstrm,.packages=c('fastmatch')) %dopar% {
 
 names(All_Acc) <- strm_list
 
+print(paste0(taskID,': Daily flows routed'))
+
+
 if(taskID!=1){
   All_Acc <- lapply(All_Acc,FUN=function(x){
     return(x[-c(1:5)])
@@ -294,5 +298,6 @@ if(taskID!=1){
 
 saveRDS(All_Acc,file=here('NLDASdata','Routed',rname,paste0(rname,'_Routed_',startdate,'_',enddate,'.RDS')))
 
+print(paste0(taskID,': Routed datafile written'))
 stopCluster(cl) 
 #}
