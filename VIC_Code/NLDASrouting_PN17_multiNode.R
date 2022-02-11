@@ -10,6 +10,8 @@ suppressPackageStartupMessages(library(doParallel))
 suppressPackageStartupMessages(library(foreach))
 suppressPackageStartupMessages(library(igraph))
 
+print(here())
+
 options(digits=22)
 options(stringsAsFactors=FALSE) 
 
@@ -28,7 +30,6 @@ applyWeights <- function(wts_in, lats, longs, tr_arr){
 }
 
 loc_filt <- function(raw_hydrograph){
-  #raw_hydrograph <- runif(100,0,1)
   return(stats::filter(c(rep(raw_hydrograph[1],2),raw_hydrograph),c(0.9, 0.075, 0.025),sides=1)[3:(length(raw_hydrograph)+2)])
 }
 
@@ -43,11 +44,6 @@ alldates <- lapply(alldailyfiles,FUN=function(x){
 #Load in lats and longs for NLDAS data grid
 lats <-  read.csv(here('NLDASdata','NLDAS_Lats.csv'),header=T,stringsAsFactors=F) %>% pull(1)
 longs <- read.csv(here('NLDASdata','NLDAS_Longs.csv'),header=T,stringsAsFactors=F) %>% pull(1)
-
-
-#Set a few R environment options
-#options(digits=22)
-#options(stringsAsFactors=FALSE)
 
 #Regions to be processed
 rn_names <- c("PN17")
@@ -192,7 +188,7 @@ all_m3_day <- foreach(cc = 1:ncat) %dopar% {
   # Apply function to reduce flashiness in data
   # then convert from depth in mm/day to volume in m3/day: (depth of water in mm/1000) * (area in square km*1000000)
   m3_day <- loc_filt(kg_m2_day) * cat_area[cc] / 1000
-  return(m3_day)
+  m3_day
 }
 names(all_m3_day) <- row.names(cat_tr)
 
@@ -280,7 +276,7 @@ All_Acc <- foreach(ss = 1:nstrm,.packages=c('fastmatch')) %dopar% {
     }
   }
   
-  return(flow_cur)
+  flow_cur
 }#EndForEachStreamSegment
 
 names(All_Acc) <- strm_list
