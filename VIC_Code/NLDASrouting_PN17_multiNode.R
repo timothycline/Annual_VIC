@@ -83,7 +83,7 @@ print(paste0(taskID,': Runoff data loaded'))
 #for(rr in 1:length(rn_names))
 rr<-1
 rname <- rn_names[rr]
-dir.create(here('NLDASdata','Routed',rname), recursive = TRUE, showWarnings = FALSE)
+dir.create(here('NLDASdata','Routed_ByDate',rname), recursive = TRUE, showWarnings = FALSE)
 
 # Load flowlines attributes (VAA): downloaded from here: https://nhdplus.com/NHDPlus/NHDPlusV2_data.php
 vaa <- read.dbf(here('NHDdata',rname,"PlusFlowlineVAA.dbf"))
@@ -237,7 +237,7 @@ All_Acc <- foreach(ss = 1:nstrm,.packages=c('fastmatch')) %dopar% {
         fromVPU <- vpux_str[vv,"FromVPU"]
         
         # read in RDS file for the upstream region
-        acc_up <- readRDS(here('NLDASdata','Routed',paste0(fromVPU,'_Routed_',startdate,'_',enddate,'.RDS')))
+        acc_up <- readRDS(here('NLDASdata','Routed_ByDate',paste0(fromVPU,'_Routed_ByDate_',startdate,'_',enddate,'.RDS')))
         
         # Get all upstream segments from the upstream VPU
         seg_ustrm <- fmatch(vpux_str[vv, "FromComID"], names(acc_up))
@@ -298,7 +298,7 @@ All_Acc <- lapply(All_Acc,FUN=function(ACC){
 })
 names(All_Acc) <- strm_list
 
-saveRDS(All_Acc,file=here('NLDASdata','Routed',rname,paste0(rname,'_Routed_',startdate,'_',enddate,'.RDS')))
+saveRDS(All_Acc,file=here('NLDASdata','Routed_ByDate',rname,paste0(rname,'_Routed_ByDate_',startdate,'_',enddate,'.RDS')))
 
 print(paste0(taskID,': Routed datafile written'))
 stopCluster(cl) 
