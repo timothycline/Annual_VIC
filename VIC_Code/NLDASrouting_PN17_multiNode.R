@@ -292,6 +292,12 @@ if(taskID!=1){
   startdate <- datenames[6]
 }
 
+DateList <- ymd(alldates)
+All_Acc <- lapply(All_Acc,FUN=function(ACC){
+  return(data.frame(Date=DateList,Flow=ACC))
+})
+names(All_Acc) <- strm_list
+
 saveRDS(All_Acc,file=here('NLDASdata','Routed',rname,paste0(rname,'_Routed_',startdate,'_',enddate,'.RDS')))
 
 print(paste0(taskID,': Routed datafile written'))
