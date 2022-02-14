@@ -5,7 +5,7 @@
 #SBATCH --job-name=NLDAS_Routing_MultiNode_PN17
 #SBATCH -n 20
 #SBATCH -N 20
-#SBATCH -p normal
+#SBATCH -p long
 #SBATCH --account=norock
 #SBATCH --time=6-23:00:00
 #SBATCH --mail-type=ALL
