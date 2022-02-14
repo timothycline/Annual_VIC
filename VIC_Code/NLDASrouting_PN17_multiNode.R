@@ -74,6 +74,7 @@ enddate <- datenames[length(datenames)]
 
 
 TotalRunoffArray<-array(unlist(AllRuns),dim=c(224,464,length(AllRuns)))
+DatesInThisRun <- names(AllRuns)
 
 rm(AllRuns)
 
@@ -290,9 +291,10 @@ if(taskID!=1){
   })
   names(All_Acc) <- strm_list
   startdate <- datenames[6]
+  DatesInThisRun <- DatesInThisRun[-c(1:5)]
 }
 
-DateList <- ymd(alldates)
+DateList <- ymd(DatesInThisRun)
 All_Acc <- lapply(All_Acc,FUN=function(ACC){
   return(data.frame(Date=DateList,Flow=ACC))
 })
@@ -301,5 +303,4 @@ names(All_Acc) <- strm_list
 saveRDS(All_Acc,file=here('NLDASdata','Routed_ByDate',rname,paste0(rname,'_Routed_ByDate_',startdate,'_',enddate,'.RDS')))
 
 print(paste0(taskID,': Routed datafile written'))
-stopCluster(cl) 
-#}
+stopCluster(cl)
