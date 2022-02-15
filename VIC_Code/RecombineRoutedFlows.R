@@ -38,13 +38,13 @@ if(sum(is.na(match(AllRoutedFlows,ls()))) >0 ) print('Error: Not all files loade
 #combine daily time series
 #Add date labels
 #Save 1 RDS per COMID
-cl <- makeCluster(detectCores())
-registerDoParallel(cl)
+#cl <- makeCluster(detectCores())
+#registerDoParallel(cl)
 
 COMIDS <- names(get(AllRoutedFlows[1]))
 
-COMIDfiles_written <- foreach(cc = 1:length(COMIDS), .packages = c('dplyr')) %dopar% {
-  comid <- COMIDS[cc]
+COMIDfiles_written <- lapply(COMIDS,FUN=function(cc){
+  comid <- cc
   FullFlowList <- lapply(AllRoutedFlows,FUN=function(ff,comID=comid){
     #ff <- AllRoutedFlows[1]
     #comID <- comid
@@ -56,6 +56,21 @@ COMIDfiles_written <- foreach(cc = 1:length(COMIDS), .packages = c('dplyr')) %do
   COMID_filename <- paste0('COMID_',comid,'_',paste0(str_split(min(FullFlowList$Date),pattern='-')[[1]],collapse=''),'_',paste0(str_split(max(FullFlowList$Date),pattern='-')[[1]],collapse=''),'.RDS')
   saveRDS(FullFlowList,here('NLDASdata','Routed_ByCOMID',rname,COMID_filename))
   COMID_filename
-}
+})
 
-stopCluster(cl)
+# COMIDfiles_written <- foreach(cc = 1:length(COMIDS), .packages = c('dplyr')) %dopar% {
+#   comid <- COMIDS[cc]
+#   FullFlowList <- lapply(AllRoutedFlows,FUN=function(ff,comID=comid){
+#     #ff <- AllRoutedFlows[1]
+#     #comID <- comid
+#     g1<-get(ff)
+#     flowvals<-g1[[which(names(g1)==comID)]]
+#     return(flowvals)
+#   }) %>% bind_rows()
+#   
+#   COMID_filename <- paste0('COMID_',comid,'_',paste0(str_split(min(FullFlowList$Date),pattern='-')[[1]],collapse=''),'_',paste0(str_split(max(FullFlowList$Date),pattern='-')[[1]],collapse=''),'.RDS')
+#   saveRDS(FullFlowList,here('NLDASdata','Routed_ByCOMID',rname,COMID_filename))
+#   COMID_filename
+# }
+
+#stopCluster(cl)
