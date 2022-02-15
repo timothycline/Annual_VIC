@@ -1,5 +1,3 @@
-R
-
 rm(list = ls(all = TRUE))
 
 suppressPackageStartupMessages(library(here))
