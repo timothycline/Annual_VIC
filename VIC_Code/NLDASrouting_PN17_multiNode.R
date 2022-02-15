@@ -1,3 +1,5 @@
+R
+
 rm(list = ls(all = TRUE))
 
 suppressPackageStartupMessages(library(here))
@@ -60,6 +62,7 @@ if(taskID == 1){
   startI <- dirsplit[[taskID]][1]
   task_dirlist <- c(seq(startI-5,startI-1,by=1),dirsplit[[taskID]])
 }
+#task_dirlist<-task_dirlist[1:10]
 
 #Read in all Runoff data as a list
 AllRuns <- lapply(alldailyfiles[task_dirlist],FUN=function(x){
@@ -74,7 +77,6 @@ enddate <- datenames[length(datenames)]
 
 
 TotalRunoffArray<-array(unlist(AllRuns),dim=c(224,464,length(AllRuns)))
-DatesInThisRun <- names(AllRuns)
 
 rm(AllRuns)
 
@@ -199,7 +201,7 @@ print(paste0(taskID,': Catchment daily flows applied'))
 strm_list <- vaa$ComID
 
 # get list of days and catchments  
-nc_days <- alldates
+nc_days <- datenames
 # number of days and streams
 ndays <- length(nc_days)
 nstrm <- length(strm_list)
@@ -290,11 +292,11 @@ if(taskID!=1){
     return(x[-c(1:5)])
   })
   names(All_Acc) <- strm_list
-  startdate <- datenames[6]
-  DatesInThisRun <- DatesInThisRun[-c(1:5)]
+  datenames <- datenames[-c(1:5)]
+  startdate <- datenames[1]
 }
 
-DateList <- ymd(DatesInThisRun)
+DateList <- ymd(datenames)
 All_Acc <- lapply(All_Acc,FUN=function(ACC){
   return(data.frame(Date=DateList,Flow=ACC))
 })
