@@ -7,7 +7,7 @@
 #SBATCH -N 2
 #SBATCH -p short
 #SBATCH --account=norock
-#SBATCH --time=6-23:00:00
+#SBATCH --time=59:00
 #SBATCH --mail-type=ALL
 #SBATCH --mail-user=tcline@usgs.gov
 #SBATCH -o CalculateAnnualFlowStats.out
