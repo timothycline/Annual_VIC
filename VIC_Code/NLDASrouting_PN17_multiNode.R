@@ -175,7 +175,7 @@ print(paste0(taskID,': Catchment weighting applied'))
 
 
 # Get catchment areas
-cat_area <- cats$AreaSqKM[fmatch(row.names(cat_tr),cats$FEATUREID)]
+cat_area <- cats$AreaSqKM[fmatch(row.names(cat_tr),cats$FEATUREID)] * 1E6
 
 #compute catchment daily flows
 cl <- makeCluster(detectCores())
@@ -187,7 +187,7 @@ all_m3_day <- foreach(cc = 1:ncat) %dopar% {
   kg_m2_day <- cat_tr[cc,]
   
   # Apply function to reduce flashiness in data
-  # then convert from depth in mm/day to volume in m3/day: (depth of water in mm/1000) * (area in square km*1000000)
+  # then convert from to m3: 1kg = 1L = 0.001 m3
   m3_day <- loc_filt(kg_m2_day) * cat_area[cc] / 1000
   m3_day
 }
