@@ -22,6 +22,9 @@ taskID <- as.numeric(Sys.getenv('SLURM_PROCID')) + 1 #Get the Node number, SLURM
 dirsplit <- split(1:length(allCOMIDfiles),cut(1:length(allCOMIDfiles),NumNodes,labels=F)) #split total number of directories into groups by
 task_dirlist <- allCOMIDfiles[dirsplit[[taskID]]] #If the first chunk load normally 
 
+cl <- makeCluster(detectCores())
+registerDoParallel(cl)
+
 Node_FlowStats <- foreach(CMID = 1:length(task_dirlist),.packages=c('dplyr','stringr','lubridate','zoo','here')) %dopar% {
   FileName <- task_dirlist[CMID]
   COM1 <- readRDS(here('NLDASdata','Routed_ByCOMID',rname,FileName)) %>% 
@@ -54,5 +57,7 @@ Node_FlowStats <- foreach(CMID = 1:length(task_dirlist),.packages=c('dplyr','str
   
   COMID_FlowStats
 } %>% bind_rows()
+
+stopCluster(cl)
 
 saveRDS(Node_FlowStats,file=here('NLDASdata','AnnualFlowStats',rname,paste0(taskID,'_outof_',NumNodes,'_AnnualFlowStats.RDS')))
