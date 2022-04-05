@@ -3,8 +3,8 @@
 # testing some scripts
 
 #SBATCH --job-name=CalculateAnnualFlowStats_PN17
-#SBATCH -n 10
-#SBATCH -N 10
+#SBATCH -n 5
+#SBATCH -N 5
 #SBATCH -p normal
 #SBATCH --account=norock
 #SBATCH --time=6-23:00:00
