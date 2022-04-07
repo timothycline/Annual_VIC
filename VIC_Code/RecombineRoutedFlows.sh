@@ -18,9 +18,12 @@ git pull
 
 sbatch VIC_Code/RecombineRoutedFlows_PN17.slurm
 
+sbatch VIC_Code/CalculateStreamFlowMetrics_PN17.slurm
+
 #Start machine and load R
 #salloc -p normal -A norock -N 1 -t 3-01:00:00
 sidle
+scancel 5887523
 #salloc -p normal -A norock -N 1 -t 3-01:00:00
 salloc -p normal -A norock -N 1 -t 3-01:00:00
 
@@ -42,4 +45,4 @@ list.files(here('NLDASdata','Routed_ByCOMID',rname))[1]
 round(100*length(list.files(here('NLDASdata','Routed_ByCOMID',rname)))/length(COMIDS),2)
 
 q()
-n
+
