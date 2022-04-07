@@ -178,7 +178,7 @@ print(paste0(taskID,': Catchment weighting applied'))
 cat_area <- cats$AreaSqKM[fmatch(row.names(cat_tr),cats$FEATUREID)] * 1E6
 
 #compute catchment daily flows
-cl <- makeCluster(detectCores())
+cl <- makeCluster(detectCores()-1)
 registerDoParallel(cl)
 all_m3_day <- foreach(cc = 1:ncat) %dopar% {
   # get full input time series in kg/m2/day
