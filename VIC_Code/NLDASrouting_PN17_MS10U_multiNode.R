@@ -290,11 +290,11 @@ if(taskID!=1){
     return(x[-c(1:5)])
   })
   names(All_Acc) <- strm_list
-  datenames <- datenames[-c(1:5)]
-  startdate <- datenames[1]
+  nc_days <- nc_days[-c(1:5)]
+  startdate <- nc_days[1]
 }
 
-DateList <- ymd(datenames)
+DateList <- ymd(nc_days)
 All_Acc <- lapply(All_Acc,FUN=function(ACC){
   return(data.frame(Date=DateList,Flow=ACC))
 })

@@ -3,8 +3,8 @@
 # testing some scripts
 
 #SBATCH --job-name=NLDAS_Routing_MultiNode_PN17_MS10U
-#SBATCH -n 20
-#SBATCH -N 20
+#SBATCH -n 10
+#SBATCH -N 10
 #SBATCH -p normal
 #SBATCH --account=norock
 #SBATCH --time=6-23:00:00
