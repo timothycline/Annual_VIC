@@ -25,7 +25,7 @@ dir.create(here('NLDASdata','AnnualFlowStats',rname))
 allCOMIDfiles <- list.files(here('NLDASdata','Routed_ByCOMID',rname))
 
 dirsplit <- split(1:length(allCOMIDfiles),cut(1:length(allCOMIDfiles),(NumNodes/2),labels=F)) #split total number of directories into groups by
-setID <- ifelse(taskID <= (NumNode/2),taskID, taskID-5 )
+setID <- ifelse(taskID <= (NumNodes/2),taskID, taskID-5 )
 task_dirlist <- allCOMIDfiles[dirsplit[[setID]]] 
 
 cl <- makeCluster(detectCores())
